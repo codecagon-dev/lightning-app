@@ -12,7 +12,7 @@ their status through the Lightning API.
 
 The app targets **Linux and Android**. It includes:
 
-- Account registration, login, and logout using API session cookies.
+- Login and logout using API session cookies.
 - Device registration, editing, deletion, and optional device colors.
 - Wake-on-LAN and SSH shutdown, with confirmation before shutdown.
 - Live device updates through WebSockets, with automatic reconnection.

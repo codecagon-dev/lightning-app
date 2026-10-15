@@ -110,7 +110,7 @@ void main() {
   );
 
   test(
-    'distinguishes an unexpected register status from a missing cookie',
+    'distinguishes an unexpected login status from a missing cookie',
     () async {
       final logs = <String>[];
       final api = ApiService(
@@ -119,13 +119,13 @@ void main() {
         client: MockClient(
           (_) async => http.Response(
             userBody,
-            200,
+            201,
             headers: {'set-cookie': 'sid=secret; Secure; Path=/'},
           ),
         ),
       );
       await expectLater(
-        AuthService(api).register(
+        AuthService(api).login(
           email: 'private@example.com',
           password: 'secret-password-123',
         ),
@@ -133,8 +133,8 @@ void main() {
       );
       final output = logs.join('\n');
       expect(output, contains('unexpected_status'));
-      expect(output, contains('"expectedStatus":201'));
-      expect(output, contains('"status":200'));
+      expect(output, contains('"expectedStatus":200'));
+      expect(output, contains('"status":201'));
       api.close();
     },
   );

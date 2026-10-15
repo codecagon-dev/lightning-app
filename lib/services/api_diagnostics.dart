@@ -18,7 +18,7 @@ class ApiDiagnostics {
   /// Only static authentication routes are safe to expose; other routes may
   /// contain user IDs, email addresses or reset tokens.
   static String safePath(String path) =>
-      const {'/auth/login', '/auth/register'}.contains(path)
+      path == '/auth/login'
       ? path
       : '[redacted]';
 

@@ -11,7 +11,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Sign in'), findsNWidgets(2));
-    expect(find.text('Register'), findsOneWidget);
+    expect(find.byType(OutlinedButton), findsNothing);
     final fields = tester
         .widgetList<TextField>(find.byType(TextField))
         .toList();

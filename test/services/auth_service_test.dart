@@ -52,10 +52,7 @@ void main() {
     );
   }
 
-  for (final register in [false, true]) {
-    test(
-      '${register ? "register" : "login"} stores user and sends cookie on following requests',
-      () async {
+  test('login stores user and sends cookie on following requests', () async {
         var calls = 0;
         final api = ApiService(
           baseUrl: 'http://localhost:3000',
@@ -63,10 +60,7 @@ void main() {
             calls++;
             if (calls == 1) {
               expect(request.method, 'POST');
-              expect(
-                request.url.path,
-                register ? '/auth/register' : '/auth/login',
-              );
+              expect(request.url.path, '/auth/login');
               expect(
                 request.headers['content-type'],
                 'application/json; charset=utf-8',
@@ -78,7 +72,7 @@ void main() {
               expect(request.headers['cookie'], isNull);
               return http.Response(
                 userJson,
-                register ? 201 : 200,
+                200,
                 headers: {
                   'set-cookie': 'session=abc; Path=/; HttpOnly; SameSite=Lax',
                 },
@@ -89,15 +83,10 @@ void main() {
           }),
         );
         final auth = AuthService(api);
-        final user = await (register
-            ? auth.register(
-                email: ' Operator@Example.com ',
-                password: '  password-123  ',
-              )
-            : auth.login(
-                email: ' Operator@Example.com ',
-                password: '  password-123  ',
-              ));
+        final user = await auth.login(
+          email: ' Operator@Example.com ',
+          password: '  password-123  ',
+        );
         expect(user.email, 'operator@example.com');
         expect(api.session.user, same(user));
         expect(api.session.isAuthenticated, isTrue);
@@ -105,9 +94,7 @@ void main() {
         api.session.signOut();
         expect(api.session.user, isNull);
         api.close();
-      },
-    );
-  }
+  });
 
   for (final status in [400, 401, 409, 415, 429, 500]) {
     test('HTTP $status leaves no authenticated user or cookies', () async {

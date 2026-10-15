@@ -46,7 +46,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String authError(int? statusCode) => switch (statusCode) {
     400 => 'Check your email address and password.',
     401 => 'Invalid email or password.',
-    409 => 'This email address is already registered.',
     415 =>
       'The server could not process this request. Check the app configuration.',
     429 => 'Too many attempts. Wait a minute and try again.',
@@ -62,9 +61,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wake up and shut down your computers, all in one place.';
   @override
   String get emailLabel => 'Email';
-  @override
-  String get register => 'Register';
-
   @override
   String get osLabel => 'Operating system';
   @override

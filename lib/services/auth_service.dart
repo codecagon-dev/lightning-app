@@ -11,10 +11,7 @@ class AuthService {
   bool _busy = false;
 
   Future<ApiUser> login({required String email, required String password}) =>
-      _authenticate('/auth/login', 200, email, password);
-
-  Future<ApiUser> register({required String email, required String password}) =>
-      _authenticate('/auth/register', 201, email, password);
+      _authenticate(email, password);
 
   /// Invalidate the server session before discarding the local cookie.
   Future<void> logout() async {
@@ -31,12 +28,7 @@ class AuthService {
     }
   }
 
-  Future<ApiUser> _authenticate(
-    String path,
-    int status,
-    String email,
-    String password,
-  ) async {
+  Future<ApiUser> _authenticate(String email, String password) async {
     final invalid =
         AuthValidators.email(email) ?? AuthValidators.password(password);
     if (invalid != null) throw AuthValidationException(invalid);
@@ -45,15 +37,15 @@ class AuthService {
     }
     _busy = true;
     api.diagnostics.event('auth.started', {
-      'path': path,
-      'expectedStatus': status,
+      'path': '/auth/login',
+      'expectedStatus': 200,
     });
     session.signOut();
     final revision = session.revision;
     try {
       final response = await api.request(
         'POST',
-        path,
+        '/auth/login',
         body: {
           'email': AuthValidators.normalizeEmail(email),
           'password': password,
@@ -63,12 +55,12 @@ class AuthService {
         api.diagnostics.event('auth.rejected', {'reason': 'session_changed'});
         throw const ApiException('Authentication was cancelled.');
       }
-      if (response.statusCode != status || !api.hasCookiesFor(path)) {
+      if (response.statusCode != 200 || !api.hasCookiesFor('/auth/login')) {
         api.diagnostics.event('auth.rejected', {
-          'reason': response.statusCode != status
+          'reason': response.statusCode != 200
               ? 'unexpected_status'
               : 'missing_usable_cookie',
-          'expectedStatus': status,
+          'expectedStatus': 200,
           'status': response.statusCode,
         });
         throw ApiException(
@@ -90,7 +82,7 @@ class AuthService {
       final user = ApiUser.fromJson(data['user'] as Map<String, dynamic>);
       session.signIn(user: user);
       api.diagnostics.event('auth.succeeded', {
-        'path': path,
+        'path': '/auth/login',
         'status': response.statusCode,
       });
       return user;

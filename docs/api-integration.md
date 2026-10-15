@@ -10,7 +10,6 @@ required:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
-| POST | `/auth/register` | Register and sign in; 201 with user and session cookie |
 | POST | `/auth/login` | Sign in; 200 with user and session cookie |
 | GET | `/auth/me` | Validate the current session |
 | POST | `/auth/logout` | End the session; 204 |

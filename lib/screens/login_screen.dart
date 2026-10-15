@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
-  bool _registering = false;
   bool _missingConfiguration = false;
   ApiException? _error;
 
@@ -32,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _submit({bool register = false}) async {
+  Future<void> _submit() async {
     if (_busy) return;
     if (!_form.currentState!.validate()) return;
     final auth = widget.authService;
@@ -43,16 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
     setState(() {
       _busy = true;
-      _registering = register;
       _error = null;
       _missingConfiguration = false;
     });
     try {
-      if (register) {
-        await auth.register(email: _email.text, password: _password.text);
-      } else {
-        await auth.login(email: _email.text, password: _password.text);
-      }
+      await auth.login(email: _email.text, password: _password.text);
       if (!mounted) return;
       TextInput.finishAutofillContext(shouldSave: true);
       _password.clear();
@@ -171,18 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 24),
                           FilledButton(
                             onPressed: _busy ? null : () => _submit(),
-                            child: _busy && !_registering
+                            child: _busy
                                 ? _progress(strings)
                                 : Text(strings.loginTitle),
-                          ),
-                          const SizedBox(height: 12),
-                          OutlinedButton(
-                            onPressed: _busy
-                                ? null
-                                : () => _submit(register: true),
-                            child: _busy && _registering
-                                ? _progress(strings)
-                                : Text(strings.register),
                           ),
                         ],
                       ),

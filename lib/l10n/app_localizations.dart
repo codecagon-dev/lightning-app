@@ -61,7 +61,6 @@ abstract class AppLocalizations {
   String get loginTitle;
   String get loginSubtitle;
   String get emailLabel;
-  String get register;
   String get homeSubtitle;
   String get devicesLabel;
   String get reloadDevices;

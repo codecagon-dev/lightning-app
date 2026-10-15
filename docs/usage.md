@@ -4,9 +4,9 @@
 
 ## Accounts and sessions
 
-Registration signs you in immediately. Login and registration validate the email
-address and require an account password of 12–128 characters. Passwords retain
-their spaces; email addresses are trimmed and lowercased.
+Sign in with an account provided by your Lightning API administrator. The app
+validates the email and requires an account password of 12–128 characters.
+Passwords retain their spaces; email addresses are trimmed and lowercased.
 
 The app keeps the signed-in user and its cookie jar **in memory for the current
 app session only**. Closing the app requires signing in again. The cookie jar is

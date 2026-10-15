@@ -95,24 +95,18 @@ void main() {
     );
   }
 
-  for (final register in [false, true]) {
-    testWidgets(
-      '${register ? "registration" : "login"} opens home and stores session',
-      (tester) async {
+  testWidgets('login opens home and stores session', (tester) async {
         final api = ApiService(
           baseUrl: 'http://localhost:3000',
           client: MockClient((request) async {
-            expect(
-              request.url.path,
-              register ? '/auth/register' : '/auth/login',
-            );
+            expect(request.url.path, '/auth/login');
             expect(jsonDecode(request.body), {
               'email': 'operator@example.com',
               'password': 'password-123',
             });
             return http.Response(
               userJson,
-              register ? 201 : 200,
+              200,
               headers: {'set-cookie': 'session=ok; Path=/; HttpOnly'},
             );
           }),
@@ -122,7 +116,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         await fillCredentials(tester);
-        await tester.tap(find.text(register ? 'Register' : 'Sign in').last);
+        await tester.tap(find.text('Sign in').last);
         await tester.pumpAndSettle();
         expect(find.byType(HomeScreen), findsOneWidget);
         expect(api.session.user?.email, 'operator@example.com');
@@ -133,13 +127,10 @@ void main() {
         expect(api.hasCookiesFor('/devices'), isFalse);
         await tester.pumpWidget(const SizedBox.shrink());
         api.close();
-      },
-    );
-  }
+  });
 
   for (final entry in {
     401: 'Invalid email or password.',
-    409: 'This email address is already registered.',
     429: 'Too many attempts. Wait a minute and try again.',
     500: 'The server could not complete your request. Try again later.',
   }.entries) {
@@ -159,9 +150,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         await fillCredentials(tester);
-        await tester.tap(
-          find.text(entry.key == 409 ? 'Register' : 'Sign in').last,
-        );
+        await tester.tap(find.text('Sign in').last);
         await tester.pumpAndSettle();
         expect(find.text(entry.value), findsOneWidget);
         expect(find.byType(HomeScreen), findsNothing);
@@ -195,7 +184,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).at(0), 'invalid');
     await tester.enterText(find.byType(TextFormField).at(1), 'short');
-    await tester.tap(find.text('Register'));
+    await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();
     expect(
       find.text('Enter a valid email address (up to 254 characters).'),
@@ -210,7 +199,7 @@ void main() {
     api.close();
   });
 
-  testWidgets('both actions are disabled while a request is pending', (
+  testWidgets('sign in is disabled while a request is pending', (
     tester,
   ) async {
     final response = Completer<http.Response>();
@@ -231,10 +220,6 @@ void main() {
     await tester.pump();
     expect(
       tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
-      isNull,
-    );
-    expect(
-      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
       isNull,
     );
     expect(requests, 1);

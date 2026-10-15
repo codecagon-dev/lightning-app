@@ -63,8 +63,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get emailLabel => 'E-mail';
   @override
-  String get register => 'Registreren';
-
   @override
   String get osLabel => 'Besturingssysteem';
   @override
